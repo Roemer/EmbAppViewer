@@ -1,0 +1,39 @@
+﻿<Window x:Class="EmbAppViewer.Presentation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
+        xmlns:local="clr-namespace:EmbAppViewer.Presentation"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:core="clr-namespace:EmbAppViewer.Core"
+        mc:Ignorable="d"
+        Title="Embedded Application Viewer" Height="350" Width="525">
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <Menu>File</Menu>
+            </Menu>
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem>
+                    <Label>Hello</Label>
+                </StatusBarItem>
+            </StatusBar>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TreeView Grid.Column="0" ItemsSource="{Binding ApplicationItems}" MouseDoubleClick="Control_OnMouseDoubleClick">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate>
+                            <Label Content="{Binding Name}"></Label>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+                <TabControl Grid.Column="2"  x:Name="MyTab" SelectionChanged="MyTab_OnSelectionChanged" />
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
