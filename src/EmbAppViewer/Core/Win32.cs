@@ -12,8 +12,13 @@ namespace EmbAppViewer.Core
         public const int SWP_NOZORDER = 0x0004;
         public const int SWP_NOACTIVATE = 0x0010;
         public const int GWL_STYLE = -16;
-        public const int WS_CAPTION = 0x00C00000;
-        public const int WS_THICKFRAME = 0x00040000;
+        public const uint WS_CAPTION = 0x00C00000;
+        public const uint WS_THICKFRAME = 0x00040000;
+        public const uint WS_POPUP = 0x80000000;
+        public const uint WS_CHILD = 0x40000000;
+        public const uint WS_CHILDWINDOW = WS_CHILD;
+        public const uint WS_BORDER = 0x00800000;
+        public const uint WS_SYSMENU = 0x00080000;
 
         // Events
         public const uint EVENT_SYSTEM_MOVESIZESTART = 0x000A;
@@ -28,11 +33,11 @@ namespace EmbAppViewer.Core
         public const uint WINEVENT_INCONTEXT = 0x0004;
 
         // Imports
-        [DllImport("user32.dll")]
-        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+        public static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
+        public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
         [DllImport("user32")]
         public static extern IntPtr SetParent(IntPtr hWnd, IntPtr hWndParent);

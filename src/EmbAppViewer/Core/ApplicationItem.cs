@@ -82,9 +82,9 @@ namespace EmbAppViewer.Core
             Process.WaitForInputIdle();
 
             // Restyle the window (remove the control box)
-            var style = Win32.GetWindowLong(Process.MainWindowHandle, Win32.GWL_STYLE);
-            style = style & ~Win32.WS_CAPTION & ~Win32.WS_THICKFRAME;
-            Win32.SetWindowLong(Process.MainWindowHandle, Win32.GWL_STYLE, style);
+            var style = Win32.GetWindowLongPtr(Process.MainWindowHandle, Win32.GWL_STYLE).ToInt64();
+            style = style & ~Win32.WS_CAPTION & ~Win32.WS_THICKFRAME & ~Win32.WS_POPUP & ~Win32.WS_SYSMENU;
+            Win32.SetWindowLongPtr(Process.MainWindowHandle, Win32.GWL_STYLE, new IntPtr(style));
 
             // Set the parent of the window
             Win32.SetParent(Process.MainWindowHandle, ContainerPanel.Handle);
