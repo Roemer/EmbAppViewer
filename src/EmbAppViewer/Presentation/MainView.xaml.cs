@@ -19,10 +19,11 @@ namespace EmbAppViewer.Presentation
         public MainWindow()
         {
             InitializeComponent();
+            // Clear the design-time items
+            MyTab.Items.Clear();
 
             _mainViewModel = new MainViewModel();
-
-            _mainViewModel.ApplicationItems.Add(new ApplicationItem("Notepad", "notepad.exe"));
+            _mainViewModel.ApplicationItems.Add(new ApplicationItem("Notepad", "notepad.exe") { AllowMultiple = true });
             _mainViewModel.ApplicationItems.Add(new ApplicationItem("Calc", "calc.exe") { Resize = false });
 
             DataContext = _mainViewModel;
@@ -32,18 +33,20 @@ namespace EmbAppViewer.Presentation
         {
             var treeView = sender as TreeView;
             // Get the item that is selected in the tree
-            if (!(treeView?.SelectedItem is ApplicationItem selectedItem))
+            if (!(treeView?.SelectedItem is ApplicationItem applicationItem))
             {
                 // No item was selected
                 return;
             }
-            // TODO: Search for an existing tab item and select that one
+            if (!applicationItem.AllowMultiple)
+            {
+                // TODO: Search for an existing tab item and select that one if it exists, continue otherwise
+            }
 
             // Create a new hosting-panel for the application to embedd
-
             Panel containerPanel;
             Panel mainPanel;
-            if (selectedItem.Resize)
+            if (applicationItem.Resize)
             {
                 // Default mode, just have one panel which resizes to the available space
                 mainPanel = new Panel();
@@ -69,21 +72,24 @@ namespace EmbAppViewer.Presentation
             // Create the win forms hosting control and add the panel
             var winFormsHost = new WindowsFormsHost { Child = mainPanel };
 
+            // Create the application instance
+            var appInstance = new ApplicationInstance(applicationItem);
+            // Start and embedd the application
+            appInstance.ContainerPanel = containerPanel;
+
             // Create a new tab item with this panel
             var newTabItem = new TabItem
             {
-                Header = selectedItem.Name,
-                Content = winFormsHost,
-                Tag = selectedItem
+                Header = appInstance,
+                Content = winFormsHost
             };
             // Add the new tab item
             MyTab.Items.Add(newTabItem);
             // Select the new tab
             MyTab.SelectedIndex = MyTab.Items.Count - 1;
-            // Start and embedd the application
-            selectedItem.ContainerPanel = containerPanel;
+
             // Start and embedd the app
-            selectedItem.StartAndEmbedd();
+            appInstance.StartAndEmbedd();
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -96,9 +102,9 @@ namespace EmbAppViewer.Presentation
         private void ResizeCurrentSelectedApp()
         {
             var selectedTabItem = MyTab.SelectedItem as TabItem;
-            if (selectedTabItem?.Tag is ApplicationItem appItem)
+            if (selectedTabItem?.Header is ApplicationInstance appInstance)
             {
-                appItem.QueueResize();
+                appInstance.QueueResize();
             }
         }
 

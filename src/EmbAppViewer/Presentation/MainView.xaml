@@ -7,7 +7,7 @@
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:core="clr-namespace:EmbAppViewer.Core"
         mc:Ignorable="d"
-        Title="Embedded Application Viewer" Height="350" Width="525">
+        Title="Embedded Application Viewer" Height="350" Width="525" ResizeMode="CanResizeWithGrip">
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
@@ -32,7 +32,39 @@
                     </TreeView.ItemTemplate>
                 </TreeView>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-                <TabControl Grid.Column="2"  x:Name="MyTab" SelectionChanged="MyTab_OnSelectionChanged" />
+                <TabControl Grid.Column="2" x:Name="MyTab" SelectionChanged="MyTab_OnSelectionChanged">
+                    <TabControl.Resources>
+                        <Style TargetType="{x:Type TabItem}">
+                            <Setter Property="HeaderTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <DockPanel LastChildFill="True">
+                                            <Button Content="X" DockPanel.Dock="Right" Command="{Binding CloseCommand}">
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <TextBlock FontWeight="Bold" Text=" X" />
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                            <ContentPresenter>
+                                                <ContentPresenter.Content>
+                                                    <TextBlock Text="{Binding Name, FallbackValue=Test}"/>
+                                                </ContentPresenter.Content>
+                                            </ContentPresenter>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.Resources>
+                    <!-- Design time data -->
+                    <TabItem Header="Hello">
+                        <Label>Content1</Label>
+                    </TabItem>
+                    <TabItem Header="World">
+                        <Label>Content2</Label>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </DockPanel>
     </Grid>
