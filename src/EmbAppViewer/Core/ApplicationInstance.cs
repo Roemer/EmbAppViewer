@@ -96,12 +96,10 @@ namespace EmbAppViewer.Core
                 MessageBox.Show($"Error waiting for MainWindow of '{AppItem.ExecutablePath}'", "Error finding MainWindow", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            // Wait until the application is idle
-            AppProcess.WaitForInputIdle();
 
             // Restyle the window (remove the control box)
             _originalWindowStyle = Win32.GetWindowLongPtr(AppProcess.MainWindowHandle, Win32.GWL_STYLE).ToInt64();
-            var style = _originalWindowStyle & ~Win32.WS_CAPTION & ~Win32.WS_THICKFRAME & ~Win32.WS_POPUP & ~Win32.WS_SYSMENU;
+            var style = _originalWindowStyle & ~Win32.WS_CAPTION & ~Win32.WS_THICKFRAME & ~Win32.WS_POPUP & ~Win32.WS_SYSMENU & ~Win32.WS_DLGFRAME;
             Win32.SetWindowLongPtr(AppProcess.MainWindowHandle, Win32.GWL_STYLE, new IntPtr(style));
 
             // Set the parent of the window
