@@ -10,6 +10,7 @@ var configuration = Argument("configuration", "Release");
 //////////////////////////////////////////////////////////////////////
 
 var artifactsDir = new DirectoryPath("./artifacts");
+var outputDir = new DirectoryPath($"./src/EmbAppViewer/bin/{configuration}");
 var slnPath = "./src/EmbAppViewer.sln";
 
 //////////////////////////////////////////////////////////////////////
@@ -20,6 +21,7 @@ Task("Clean")
     .Does(() =>
 {
     CleanDirectory(artifactsDir);
+    CleanDirectory(outputDir);
 });
 
 Task("Restore-NuGet-Packages")
@@ -43,6 +45,13 @@ Task("Build")
         MSBuildFileLoggerOutput = MSBuildFileLoggerOutput.All,
         ShowTimestamp = true
     }));
+});
+
+Task("Package")
+    .IsDependentOn("Build")
+    .Does(() =>
+{
+    Zip(outputDir, artifactsDir.CombineWithFilePath("EmbAppViewer.zip"), new[] { outputDir.CombineWithFilePath("EmbAppViewer.exe") });
 });
 
 //////////////////////////////////////////////////////////////////////
