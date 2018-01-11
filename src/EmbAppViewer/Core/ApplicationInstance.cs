@@ -34,10 +34,10 @@ namespace EmbAppViewer.Core
         /// <summary>
         /// Create a new instance of the application.
         /// </summary>
-        /// <param name="appItem">The <see cref="ApplicationItem"/> on which this instance is based on.</param>
-        public ApplicationInstance(ApplicationItem appItem)
+        /// <param name="item">The <see cref="Item"/> on which this instance is based on.</param>
+        public ApplicationInstance(Item item)
         {
-            AppItem = appItem;
+            Item = item;
 
             _resizeTimer = new Timer
             {
@@ -55,7 +55,7 @@ namespace EmbAppViewer.Core
         /// <summary>
         /// The <see cref="ApplicationItem"/> on which this instance is based on.
         /// </summary>
-        public ApplicationItem AppItem { get; }
+        public Item Item { get; }
 
         /// <summary>
         /// The associated process for the application.
@@ -75,25 +75,25 @@ namespace EmbAppViewer.Core
         /// <summary>
         /// The display name of the application.
         /// </summary>
-        public string Name => AppItem.Name;
+        public string Name => Item.Name;
 
         public void StartAndEmbedd()
         {
             // Start executable
-            var psi = new ProcessStartInfo(AppItem.ExecutablePath, AppItem.Arguments);
+            var psi = new ProcessStartInfo(Item.Path, Item.Arguments);
             try
             {
                 AppProcess = Process.Start(psi);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error starting '{AppItem.ExecutablePath}':{Environment.NewLine}{ex.Message}", "Error starting", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error starting '{Item.Path}':{Environment.NewLine}{ex.Message}", "Error starting", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            var successWaintingForWindow = SpinWait.SpinUntil(() => AppProcess.MainWindowHandle != IntPtr.Zero, AppItem.MaxLoadTime);
+            var successWaintingForWindow = SpinWait.SpinUntil(() => AppProcess.MainWindowHandle != IntPtr.Zero, Item.MaxLoadTime);
             if (!successWaintingForWindow)
             {
-                MessageBox.Show($"Error waiting for MainWindow of '{AppItem.ExecutablePath}'", "Error finding MainWindow", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error waiting for MainWindow of '{Item.Path}'", "Error finding MainWindow", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace EmbAppViewer.Core
             // Set the parent of the window
             Win32.SetParent(AppProcess.MainWindowHandle, ContainerPanel.Handle);
 
-            if (!AppItem.Resize)
+            if (!Item.Resize)
             {
                 // Calculate the original size of the window
                 Win32.GetWindowRect(new HandleRef(this, AppProcess.MainWindowHandle), out var rct);
@@ -129,7 +129,7 @@ namespace EmbAppViewer.Core
         /// </summary>
         public void QueueResize()
         {
-            if (AppItem.Resize && !_resizeTimer.Enabled)
+            if (Item.Resize && !_resizeTimer.Enabled)
             {
                 _resizeTimer.Start();
             }
@@ -145,7 +145,7 @@ namespace EmbAppViewer.Core
         /// </summary>
         private void ResizeEmbeddedApp()
         {
-            if (AppProcess == null || !AppItem.Resize)
+            if (AppProcess == null || !Item.Resize)
             {
                 return;
             }

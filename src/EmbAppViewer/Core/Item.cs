@@ -1,18 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EmbAppViewer.Core
 {
     /// <summary>
-    /// Represents an item from which applications to embedd can be started.
+    /// Represents an item in the tree. Can either be a folder or an application.
     /// </summary>
-    public class ApplicationItem
+    public class Item
     {
-        public ApplicationItem(string name, string executablePath)
-        {
-            Name = name;
-            ExecutablePath = executablePath;
-        }
-
         /// <summary>
         /// The display name of the application.
         /// </summary>
@@ -21,7 +16,7 @@ namespace EmbAppViewer.Core
         /// <summary>
         /// The path of the executable of the application.
         /// </summary>
-        public string ExecutablePath { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// The command line arguments used when starting the application.
@@ -36,16 +31,31 @@ namespace EmbAppViewer.Core
         /// <summary>
         /// Flag to indicate if the application can be started multiple times.
         /// </summary>
-        public bool AllowMultiple { get; set; }
+        public bool Multiple { get; set; }
 
         /// <summary>
         /// The maximum time to wait until a process window can be found.
         /// </summary>
         public TimeSpan MaxLoadTime { get; set; } = TimeSpan.FromSeconds(5);
 
+        /// <summary>
+        /// The list of nested items.
+        /// </summary>
+        public List<Item> Items { get; set; } = new List<Item>();
+
+        /// <summary>
+        /// Flag to indicate if the item is a folder.
+        /// </summary>
+        public bool IsFolder => String.IsNullOrWhiteSpace(Path);
+
+        /// <summary>
+        /// Flag to indicate if the item is an application.
+        /// </summary>
+        public bool IsApp => !IsFolder;
+
         public override string ToString()
         {
-            return Name;
+            return $"{(IsFolder ? "Dir" : "App")}: {Name}";
         }
     }
 }

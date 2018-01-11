@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using EmbAppViewer.Core;
 using Panel = System.Windows.Forms.Panel;
 using TreeView = System.Windows.Controls.TreeView;
@@ -19,12 +21,13 @@ namespace EmbAppViewer.Presentation
         public MainWindow()
         {
             InitializeComponent();
+
             // Clear the design-time items
             MyTab.Items.Clear();
 
             _mainViewModel = new MainViewModel();
-            _mainViewModel.ApplicationItems.Add(new ApplicationItem("Notepad", "notepad.exe") { AllowMultiple = true });
-            _mainViewModel.ApplicationItems.Add(new ApplicationItem("Calc", "calc.exe") { Resize = false });
+            var localConfig = ConfigLoader.LoadConfig();
+            _mainViewModel.Items.AddRange(localConfig.Items);
 
             DataContext = _mainViewModel;
         }
@@ -33,12 +36,16 @@ namespace EmbAppViewer.Presentation
         {
             var treeView = sender as TreeView;
             // Get the item that is selected in the tree
-            if (!(treeView?.SelectedItem is ApplicationItem applicationItem))
+            if (!(treeView?.SelectedItem is Item item))
             {
                 // No item was selected
                 return;
             }
-            if (!applicationItem.AllowMultiple)
+            if (item.IsFolder)
+            {
+                return;
+            }
+            if (!item.Multiple)
             {
                 // TODO: Search for an existing tab item and select that one if it exists, continue otherwise
             }
@@ -46,7 +53,7 @@ namespace EmbAppViewer.Presentation
             // Create a new hosting-panel for the application to embedd
             Panel containerPanel;
             Panel mainPanel;
-            if (applicationItem.Resize)
+            if (item.Resize)
             {
                 // Default mode, just have one panel which resizes to the available space
                 mainPanel = new Panel();
@@ -73,9 +80,10 @@ namespace EmbAppViewer.Presentation
             var winFormsHost = new WindowsFormsHost { Child = mainPanel };
 
             // Create the application instance
-            var appInstance = new ApplicationInstance(applicationItem);
-            // Start and embedd the application
-            appInstance.ContainerPanel = containerPanel;
+            var appInstance = new ApplicationInstance(item)
+            {
+                ContainerPanel = containerPanel
+            };
 
             // Create a new tab item with this panel
             var newTabItem = new TabItem

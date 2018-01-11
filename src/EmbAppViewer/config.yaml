@@ -1,0 +1,16 @@
+﻿items:
+  - name: Writing
+    items:
+      - name: Notepad
+        path: notepad.exe
+        multiple: true
+  - name: Tools
+    items:
+      - name: Windows
+        items:
+          - name: Calc
+            path: calc.exe
+            resize: false
+          - name: Cmd
+            path: cmd.exe
+            multiple: true

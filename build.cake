@@ -51,7 +51,11 @@ Task("Package")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    Zip(outputDir, artifactsDir.CombineWithFilePath("EmbAppViewer.zip"), new[] { outputDir.CombineWithFilePath("EmbAppViewer.exe") });
+    Zip(outputDir, artifactsDir.CombineWithFilePath("EmbAppViewer.zip"), new[] {
+        outputDir.CombineWithFilePath("EmbAppViewer.exe"),
+        outputDir.CombineWithFilePath("YamlDotNet.dll"),
+        outputDir.CombineWithFilePath("config.yaml")
+    });
 });
 
 //////////////////////////////////////////////////////////////////////

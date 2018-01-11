@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Input;
 using EmbAppViewer.Core;
 
 namespace EmbAppViewer.Presentation
@@ -7,9 +9,14 @@ namespace EmbAppViewer.Presentation
     {
         public MainViewModel()
         {
-            ApplicationItems = new List<ApplicationItem>();
+            ExitCommand = new RelayCommand(o =>
+            {
+                Application.Current.Shutdown();
+            });    
         }
 
-        public List<ApplicationItem> ApplicationItems { get; }
+        public List<Item> Items { get; } = new List<Item>();
+
+        public ICommand ExitCommand { get; }
     }
 }
