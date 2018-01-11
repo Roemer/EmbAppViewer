@@ -1,4 +1,3 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -10,8 +9,8 @@ var configuration = Argument("configuration", "Release");
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-// Define directories.
-var buildDir = Directory("./src/Example/bin") + Directory(configuration);
+var artifactsDir = new DirectoryPath("./artifacts");
+var slnPath = "./src/EmbAppViewer.sln";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -20,41 +19,30 @@ var buildDir = Directory("./src/Example/bin") + Directory(configuration);
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectory(buildDir);
+    CleanDirectory(artifactsDir);
 });
 
 Task("Restore-NuGet-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    NuGetRestore("./src/Example.sln");
+    NuGetRestore(slnPath);
 });
 
 Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
-    if(IsRunningOnWindows())
-    {
-      // Use MSBuild
-      MSBuild("./src/Example.sln", settings =>
-        settings.SetConfiguration(configuration));
-    }
-    else
-    {
-      // Use XBuild
-      XBuild("./src/Example.sln", settings =>
-        settings.SetConfiguration(configuration));
-    }
-});
-
-Task("Run-Unit-Tests")
-    .IsDependentOn("Build")
-    .Does(() =>
-{
-    NUnit3("./src/**/bin/" + configuration + "/*.Tests.dll", new NUnit3Settings {
-        NoResults = true
-        });
+    MSBuild(slnPath, new MSBuildSettings {
+        Verbosity = Verbosity.Minimal,
+        ToolVersion = MSBuildToolVersion.VS2017,
+        Configuration = configuration
+    }.AddFileLogger(new MSBuildFileLogger {
+        LogFile = artifactsDir.CombineWithFilePath("BuildLog.txt"),
+        Verbosity = Verbosity.Normal,
+        MSBuildFileLoggerOutput = MSBuildFileLoggerOutput.All,
+        ShowTimestamp = true
+    }));
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -62,7 +50,7 @@ Task("Run-Unit-Tests")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Run-Unit-Tests");
+    .IsDependentOn("Build");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
