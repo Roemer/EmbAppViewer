@@ -75,6 +75,10 @@
     <Compile Include="Core\ConfigLoader.cs" />
     <Compile Include="Core\Item.cs" />
     <Compile Include="Core\ObservableObject.cs" />
+    <Compile Include="Core\Overlay\OverlayRectangle.cs" />
+    <Compile Include="Core\Overlay\OverlayRectangleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Core\ProcessExtensions.cs" />
     <Compile Include="Core\RelayCommand.cs" />
     <Compile Include="Core\TypedRelayCommand.cs" />
@@ -130,6 +134,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\detach.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\drag.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

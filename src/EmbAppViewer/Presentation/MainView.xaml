@@ -25,52 +25,61 @@
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
-                <TreeView Grid.Column="0" ItemsSource="{Binding Items}" MouseDoubleClick="Control_OnMouseDoubleClick">
-                    <TreeView.ItemContainerStyle>
-                        <Style TargetType="{x:Type TreeViewItem}">
-                            <Setter Property="IsExpanded" Value="True" />
-                        </Style>
-                    </TreeView.ItemContainerStyle>
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Items}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Height="16">
-                                    <Image.Style>
-                                        <Style TargetType="{x:Type Image}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsFolder}" Value="True">
-                                                    <Setter Property="Source" Value="/Resources/folder.png" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsApp}" Value="True">
-                                                    <Setter Property="Source" Value="/Resources/application.png" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
+                <DockPanel Grid.Column="0">
+                    <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
+                        <ToolBar OverflowMode="Always">
+                            <Image Source="/Resources/drag.png" ToolTip="Drag to select window to attach"
+                                MouseDown="DragImage_OnMouseDown" MouseUp="DragImage_OnMouseUp" MouseMove="DragImage_OnMouseMove"/>
+                        </ToolBar>
+                    </ToolBarTray>
+                    <TreeView ItemsSource="{Binding Items}" MouseDoubleClick="Control_OnMouseDoubleClick">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="{x:Type TreeViewItem}">
+                                <Setter Property="IsExpanded" Value="True" />
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Height="16">
+                                        <Image.Style>
+                                            <Style TargetType="{x:Type Image}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsFolder}" Value="True">
+                                                        <Setter Property="Source" Value="/Resources/folder.png" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsApp}" Value="True">
+                                                        <Setter Property="Source" Value="/Resources/application.png" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </DockPanel>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
                 <TabControl Grid.Column="2" x:Name="MyTab" SelectionChanged="MyTab_OnSelectionChanged">
                     <TabControl.Resources>
                         <Style TargetType="{x:Type TabItem}">
                             <!-- Template for the header -->
+                            <Setter Property="Padding" Value="5 0 0 0" />
                             <Setter Property="HeaderTemplate">
                                 <Setter.Value>
                                     <DataTemplate>
                                         <DockPanel LastChildFill="True">
                                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                                <Button Content="X" Command="{Binding DetachCommand}">
+                                                <Button Command="{Binding DetachCommand}" ToolTip="Detach">
                                                     <Button.Template>
                                                         <ControlTemplate>
                                                             <Image Width="12" Source="/Resources/detach.png" />
                                                         </ControlTemplate>
                                                     </Button.Template>
                                                 </Button>
-                                                <Button Content="X" Command="{Binding CloseCommand}">
+                                                <Button Command="{Binding CloseCommand}" ToolTip="Close">
                                                     <Button.Template>
                                                         <ControlTemplate>
                                                             <Image Width="16" Source="/Resources/close.png" />

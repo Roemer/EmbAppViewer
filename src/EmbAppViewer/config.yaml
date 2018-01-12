@@ -14,3 +14,7 @@
           - name: Cmd
             path: cmd.exe
             multiple: true
+      - name: Development
+        items:
+          - name: Git-Bash
+            path: C:\Program Files\Git\git-bash.exe

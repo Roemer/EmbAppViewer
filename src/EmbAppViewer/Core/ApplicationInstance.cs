@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
 using System.Windows.Controls;
@@ -107,9 +106,8 @@ namespace EmbAppViewer.Core
 
         public event Action<ApplicationInstance> Removed;
 
-        public void StartAndEmbedd()
+        public bool Start()
         {
-            // Start executable
             var psi = new ProcessStartInfo(Item.Path, Item.Arguments);
             if (String.IsNullOrWhiteSpace(Item.WorkDirectory))
             {
@@ -126,7 +124,7 @@ namespace EmbAppViewer.Core
             catch (Exception ex)
             {
                 MessageBox.Show($"Error starting '{Item.Path}':{Environment.NewLine}{ex.Message}", "Error starting", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
             _windowHandle = IntPtr.Zero;
@@ -152,9 +150,22 @@ namespace EmbAppViewer.Core
             if (!successWaintingForWindow)
             {
                 MessageBox.Show($"Error waiting for MainWindow of '{Item.Path}'", "Error finding MainWindow", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            return true;
+        }
+
+        public void StartAndEmbedd()
+        {
+            if (!Start())
+            {
                 return;
             }
+            Embedd();
+        }
 
+        public void Embedd()
+        {
             // Restyle the window (remove the control box)
             _originalWindowStyle = Win32.GetWindowLongPtr(_windowHandle, Win32.GWL_STYLE).ToInt64();
             var style = _originalWindowStyle & ~Win32.WS_CAPTION & ~Win32.WS_THICKFRAME & ~Win32.WS_POPUP & ~Win32.WS_SYSMENU & ~Win32.WS_DLGFRAME;
@@ -166,7 +177,7 @@ namespace EmbAppViewer.Core
             if (!Item.Resize)
             {
                 // Calculate the original size of the window
-                Win32.GetWindowRect(new HandleRef(this, _windowHandle), out var rct);
+                Win32.GetWindowRect(_windowHandle, out var rct);
                 // Move the original window into the panel
                 Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top, Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
                 // Resize the panel to match the original window size
@@ -203,7 +214,7 @@ namespace EmbAppViewer.Core
         /// </summary>
         private void ResizeEmbeddedApp()
         {
-            if (AppProcess == null || !Item.Resize)
+            if (_windowHandle == IntPtr.Zero || !Item.Resize)
             {
                 return;
             }
@@ -244,6 +255,11 @@ namespace EmbAppViewer.Core
             AppProcess?.Dispose();
 
             Removed?.Invoke(this);
+        }
+
+        public void InitFromHwnd(IntPtr windowHandle)
+        {
+            _windowHandle = windowHandle;
         }
     }
 }

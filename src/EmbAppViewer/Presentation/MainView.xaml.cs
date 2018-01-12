@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using EmbAppViewer.Core;
+using EmbAppViewer.Core.Overlay;
+using Image = System.Windows.Controls.Image;
 using Panel = System.Windows.Forms.Panel;
+using Size = System.Windows.Size;
 using TreeView = System.Windows.Controls.TreeView;
 
 namespace EmbAppViewer.Presentation
@@ -52,10 +55,21 @@ namespace EmbAppViewer.Presentation
                 // TODO: Search for an existing tab item and select that one if it exists, continue otherwise
             }
 
+            var appInstance = new ApplicationInstance(item);
+            var startSuccessfull = appInstance.Start();
+            if (!startSuccessfull)
+            {
+                return;
+            }
+            EmbeddAppInTab(appInstance);
+        }
+
+        private void EmbeddAppInTab(ApplicationInstance appInstance)
+        {
             // Create a new hosting-panel for the application to embedd
             Panel containerPanel;
             Panel mainPanel;
-            if (item.Resize)
+            if (appInstance.Item.Resize)
             {
                 // Default mode, just have one panel which resizes to the available space
                 mainPanel = new Panel();
@@ -82,10 +96,7 @@ namespace EmbAppViewer.Presentation
             var winFormsHost = new WindowsFormsHost { Child = mainPanel };
 
             // Create the application instance
-            var appInstance = new ApplicationInstance(item)
-            {
-                ContainerPanel = containerPanel
-            };
+            appInstance.ContainerPanel = containerPanel;
             appInstance.Removed += AppInstance_Removed;
 
             // Create a new tab item with this panel
@@ -105,7 +116,7 @@ namespace EmbAppViewer.Presentation
             WpfTools.DoEvents();
 
             // Start and embedd the app
-            appInstance.StartAndEmbedd();
+            appInstance.Embedd();
         }
 
         private void AppInstance_Removed(ApplicationInstance obj)
@@ -138,6 +149,76 @@ namespace EmbAppViewer.Presentation
         {
             await Task.Delay(200);
             ResizeCurrentSelectedApp();
+        }
+
+        private void DragImage_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var image = sender as Image;
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                Mouse.OverrideCursor = Cursors.Cross;
+                Mouse.Capture(image);
+                e.Handled = true;
+            }
+        }
+
+        private void DragImage_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                Mouse.OverrideCursor = null;
+                Mouse.Capture(null);
+
+                _lastOverlay?.Dispose();
+
+                if (_lastWindowHandle != IntPtr.Zero)
+                {
+                    var item = new Item();
+                    item.Name = "Test";
+                    var appInstance = new ApplicationInstance(item);
+                    appInstance.InitFromHwnd(_lastWindowHandle);
+                    EmbeddAppInTab(appInstance);
+
+                    _lastWindowHandle = IntPtr.Zero;
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        private IntPtr _lastWindowHandle = IntPtr.Zero;
+        private OverlayRectangle _lastOverlay = null;
+
+        private void DragImage_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                // Get the control under the mouse
+                var point = System.Windows.Forms.Cursor.Position;
+                var window = Win32.WindowFromPoint(point);
+
+                // Go down the parents
+                IntPtr parent;
+                while ((parent = Win32.GetParent(window)) != IntPtr.Zero)
+                {
+                    window = parent;
+                }
+
+                Win32.GetWindowRect(window, out var rect);
+                var rectangle = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+
+                if (_lastWindowHandle == IntPtr.Zero)
+                {
+                    _lastOverlay = new OverlayRectangle(rectangle);
+                }
+                else if (window != _lastWindowHandle)
+                {
+                    _lastOverlay.Dispose();
+                    _lastOverlay = new OverlayRectangle(rectangle);
+                }
+
+                _lastWindowHandle = window;
+            }
         }
     }
 }
