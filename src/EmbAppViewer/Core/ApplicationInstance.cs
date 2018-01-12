@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
@@ -81,6 +82,14 @@ namespace EmbAppViewer.Core
         {
             // Start executable
             var psi = new ProcessStartInfo(Item.Path, Item.Arguments);
+            if (String.IsNullOrWhiteSpace(Item.WorkDirectory))
+            {
+                psi.WorkingDirectory = Path.GetDirectoryName(Item.Path);
+            }
+            else
+            {
+                psi.WorkingDirectory = Item.WorkDirectory;
+            }
             try
             {
                 AppProcess = Process.Start(psi);

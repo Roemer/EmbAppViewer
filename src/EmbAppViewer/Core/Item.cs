@@ -24,6 +24,11 @@ namespace EmbAppViewer.Core
         public string Arguments { get; set; }
 
         /// <summary>
+        /// The work directory for the application.
+        /// </summary>
+        public string WorkDirectory { get; set; }
+
+        /// <summary>
         /// Flag to indicate if the embedded application should resize to the containers size or just keep its original size.
         /// </summary>
         public bool Resize { get; set; } = true;
