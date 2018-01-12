@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -74,9 +75,11 @@
     <Compile Include="Core\ConfigLoader.cs" />
     <Compile Include="Core\Item.cs" />
     <Compile Include="Core\ObservableObject.cs" />
+    <Compile Include="Core\ProcessExtensions.cs" />
     <Compile Include="Core\RelayCommand.cs" />
     <Compile Include="Core\TypedRelayCommand.cs" />
     <Compile Include="Core\Win32.cs" />
+    <Compile Include="Core\WpfTools.cs" />
     <Compile Include="Presentation\MainViewModel.cs" />
     <Compile Include="Presentation\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
@@ -15,6 +18,10 @@ namespace EmbAppViewer.Core
     /// </summary>
     public class ApplicationInstance : IDisposable
     {
+        /// <summary>
+        /// The window handle of the applications main window.
+        /// </summary>
+        private IntPtr _windowHandle;
         /// <summary>
         /// Variable containing the original window style to restore it on detach.
         /// </summary>
@@ -99,7 +106,27 @@ namespace EmbAppViewer.Core
                 MessageBox.Show($"Error starting '{Item.Path}':{Environment.NewLine}{ex.Message}", "Error starting", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            var successWaintingForWindow = SpinWait.SpinUntil(() => AppProcess.MainWindowHandle != IntPtr.Zero, Item.MaxLoadTime);
+
+            _windowHandle = IntPtr.Zero;
+            var successWaintingForWindow = SpinWait.SpinUntil(() =>
+            {
+                // Try the main process
+                if (AppProcess.MainWindowHandle != IntPtr.Zero)
+                {
+                    _windowHandle = AppProcess.MainWindowHandle;
+                    return true;
+                }
+                // Try the child processes
+                foreach (var child in AppProcess.GetChildProcesses())
+                {
+                    if (child.MainWindowHandle != IntPtr.Zero)
+                    {
+                        _windowHandle = child.MainWindowHandle;
+                        return true;
+                    }
+                }
+                return false;
+            }, Item.MaxLoadTime);
             if (!successWaintingForWindow)
             {
                 MessageBox.Show($"Error waiting for MainWindow of '{Item.Path}'", "Error finding MainWindow", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -107,19 +134,19 @@ namespace EmbAppViewer.Core
             }
 
             // Restyle the window (remove the control box)
-            _originalWindowStyle = Win32.GetWindowLongPtr(AppProcess.MainWindowHandle, Win32.GWL_STYLE).ToInt64();
+            _originalWindowStyle = Win32.GetWindowLongPtr(_windowHandle, Win32.GWL_STYLE).ToInt64();
             var style = _originalWindowStyle & ~Win32.WS_CAPTION & ~Win32.WS_THICKFRAME & ~Win32.WS_POPUP & ~Win32.WS_SYSMENU & ~Win32.WS_DLGFRAME;
-            Win32.SetWindowLongPtr(AppProcess.MainWindowHandle, Win32.GWL_STYLE, new IntPtr(style));
+            Win32.SetWindowLongPtr(_windowHandle, Win32.GWL_STYLE, new IntPtr(style));
 
             // Set the parent of the window
-            Win32.SetParent(AppProcess.MainWindowHandle, ContainerPanel.Handle);
+            Win32.SetParent(_windowHandle, ContainerPanel.Handle);
 
             if (!Item.Resize)
             {
                 // Calculate the original size of the window
-                Win32.GetWindowRect(new HandleRef(this, AppProcess.MainWindowHandle), out var rct);
+                Win32.GetWindowRect(new HandleRef(this, _windowHandle), out var rct);
                 // Move the original window into the panel
-                Win32.SetWindowPos(AppProcess.MainWindowHandle, IntPtr.Zero, 0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top, Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
+                Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top, Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
                 // Resize the panel to match the original window size
                 Win32.SetWindowPos(ContainerPanel.Handle, IntPtr.Zero, 0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top, Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
             }
@@ -129,7 +156,7 @@ namespace EmbAppViewer.Core
                 ResizeEmbeddedApp();
 
                 // Set the hook to resize the embedded application if it changes it's size
-                SetUpHook(AppProcess.MainWindowHandle);
+                SetUpHook(_windowHandle);
             }
         }
 
@@ -158,7 +185,7 @@ namespace EmbAppViewer.Core
             {
                 return;
             }
-            Win32.SetWindowPos(AppProcess.MainWindowHandle, IntPtr.Zero, 0, 0, ContainerPanel.ClientSize.Width,
+            Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, ContainerPanel.ClientSize.Width,
                 ContainerPanel.ClientSize.Height, Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
         }
 
@@ -177,7 +204,7 @@ namespace EmbAppViewer.Core
 
         private void WinEventHookCallback(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            if (hwnd != IntPtr.Zero && hwnd == AppProcess.MainWindowHandle)
+            if (hwnd != IntPtr.Zero && hwnd == _windowHandle)
             {
                 if (eventType == Win32.EVENT_OBJECT_LOCATIONCHANGE)
                 {

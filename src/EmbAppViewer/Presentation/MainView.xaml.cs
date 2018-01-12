@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using EmbAppViewer.Core;
 using Panel = System.Windows.Forms.Panel;
 using TreeView = System.Windows.Controls.TreeView;
@@ -95,6 +97,9 @@ namespace EmbAppViewer.Presentation
             MyTab.Items.Add(newTabItem);
             // Select the new tab
             MyTab.SelectedIndex = MyTab.Items.Count - 1;
+
+            // Wait until the tab is correctly added
+            WpfTools.DoEvents();
 
             // Start and embedd the app
             appInstance.StartAndEmbedd();
