@@ -62,16 +62,25 @@
                                 <Setter.Value>
                                     <DataTemplate>
                                         <DockPanel LastChildFill="True">
-                                            <Button Content="X" DockPanel.Dock="Right" Command="{Binding CloseCommand}">
-                                                <Button.Template>
-                                                    <ControlTemplate>
-                                                        <TextBlock FontWeight="Bold" Text=" X" />
-                                                    </ControlTemplate>
-                                                </Button.Template>
-                                            </Button>
+                                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                                <Button Content="X" Command="{Binding DetachCommand}">
+                                                    <Button.Template>
+                                                        <ControlTemplate>
+                                                            <Image Width="12" Source="/Resources/detach.png" />
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                                <Button Content="X" Command="{Binding CloseCommand}">
+                                                    <Button.Template>
+                                                        <ControlTemplate>
+                                                            <Image Width="16" Source="/Resources/close.png" />
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                            </StackPanel>
                                             <ContentPresenter>
                                                 <ContentPresenter.Content>
-                                                    <TextBlock Text="{Binding Name, FallbackValue=Test}"/>
+                                                    <TextBlock Margin="0 0 5 0" Text="{Binding Name, FallbackValue=Test}"/>
                                                 </ContentPresenter.Content>
                                             </ContentPresenter>
                                         </DockPanel>

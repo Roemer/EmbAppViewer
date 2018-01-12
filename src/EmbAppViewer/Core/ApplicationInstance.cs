@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Panel = System.Windows.Forms.Panel;
 using Timer = System.Timers.Timer;
 
 namespace EmbAppViewer.Core
@@ -56,7 +55,18 @@ namespace EmbAppViewer.Core
 
             CloseCommand = new RelayCommand(o =>
             {
-                Console.WriteLine($"Closing {Name}");
+                AppProcess.CloseMainWindow();
+                AppProcess.Close();
+                Dispose();
+            });
+
+            DetachCommand = new RelayCommand(o =>
+            {
+                // Reset the style
+                Win32.SetWindowLongPtr(_windowHandle, Win32.GWL_STYLE, new IntPtr(_originalWindowStyle));
+                // Unset the parent
+                Win32.SetParent(_windowHandle, IntPtr.Zero);
+                Dispose();
             });
         }
 
@@ -66,12 +76,17 @@ namespace EmbAppViewer.Core
         public Item Item { get; }
 
         /// <summary>
+        /// The <see cref="TabItem"/> where this app is displayed on.
+        /// </summary>
+        public TabItem TabItem { get; set; }
+
+        /// <summary>
         /// The associated process for the application.
         /// </summary>
         public Process AppProcess { get; set; }
 
         /// <summary>
-        /// The WinForms <see cref="Panel"/> which is the container for the application.
+        /// The WinForms <see cref="System.Windows.Forms.Panel"/> which is the container for the application.
         /// </summary>
         public Panel ContainerPanel { get; set; }
 
@@ -81,9 +96,16 @@ namespace EmbAppViewer.Core
         public ICommand CloseCommand { get; }
 
         /// <summary>
+        /// The command which is executed when the application should be detached.
+        /// </summary>
+        public ICommand DetachCommand { get; }
+
+        /// <summary>
         /// The display name of the application.
         /// </summary>
         public string Name => Item.Name;
+
+        public event Action<ApplicationInstance> Removed;
 
         public void StartAndEmbedd()
         {
@@ -220,6 +242,8 @@ namespace EmbAppViewer.Core
             _resizeTimer.Dispose();
             Win32.UnhookWinEvent(_hook);
             AppProcess?.Dispose();
+
+            Removed?.Invoke(this);
         }
     }
 }

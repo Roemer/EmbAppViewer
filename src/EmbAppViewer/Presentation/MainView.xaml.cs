@@ -86,6 +86,7 @@ namespace EmbAppViewer.Presentation
             {
                 ContainerPanel = containerPanel
             };
+            appInstance.Removed += AppInstance_Removed;
 
             // Create a new tab item with this panel
             var newTabItem = new TabItem
@@ -93,6 +94,8 @@ namespace EmbAppViewer.Presentation
                 Header = appInstance,
                 Content = winFormsHost
             };
+            // Associate the tab item with the app instance
+            appInstance.TabItem = newTabItem;
             // Add the new tab item
             MyTab.Items.Add(newTabItem);
             // Select the new tab
@@ -103,6 +106,16 @@ namespace EmbAppViewer.Presentation
 
             // Start and embedd the app
             appInstance.StartAndEmbedd();
+        }
+
+        private void AppInstance_Removed(ApplicationInstance obj)
+        {
+            obj.Removed -= AppInstance_Removed;
+            // Fix the "binding error" when the last tab is removed and it tries to find the tab control which is then removed as well.
+            // See: https://stackoverflow.com/questions/14419248/cannot-find-source-for-binding
+            obj.TabItem.Template = null;
+            // Effectively remove the item
+            MyTab.Items.Remove(obj.TabItem);
         }
 
         protected override Size MeasureOverride(Size availableSize)
