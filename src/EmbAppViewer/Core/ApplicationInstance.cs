@@ -264,6 +264,10 @@ namespace EmbAppViewer.Core
         public void InitFromHwnd(IntPtr windowHandle)
         {
             _windowHandle = windowHandle;
+            Win32.GetWindowThreadProcessId(windowHandle, out uint processId);
+            var process = Process.GetProcessById((int)processId);
+            AppProcess = process;
+            Name = process.ProcessName;
         }
     }
 }
