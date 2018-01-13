@@ -3,10 +3,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:presentation="clr-namespace:EmbAppViewer.Presentation"
+        xmlns:core="clr-namespace:EmbAppViewer.Core"
+        xmlns:controls="clr-namespace:EmbAppViewer.Presentation.Controls"
         mc:Ignorable="d"
         Title="Embedded Application Viewer" ResizeMode="CanResizeWithGrip"
         Height="400" Width="600"
         Icon ="/Resources/icon.png">
+    <Window.DataContext>
+        <presentation:MainViewModel />
+    </Window.DataContext>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
@@ -16,7 +22,7 @@
             </Menu>
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
-                    <Label>Hello</Label>
+                    <Label>Welcome</Label>
                 </StatusBarItem>
             </StatusBar>
             <Grid>
@@ -69,7 +75,7 @@
                             <Setter Property="Padding" Value="5 0 0 0" />
                             <Setter Property="HeaderTemplate">
                                 <Setter.Value>
-                                    <DataTemplate>
+                                    <DataTemplate DataType="core:ApplicationInstance">
                                         <DockPanel LastChildFill="True">
                                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                                                 <Button Command="{Binding DetachCommand}" ToolTip="Detach">
@@ -89,7 +95,7 @@
                                             </StackPanel>
                                             <ContentPresenter>
                                                 <ContentPresenter.Content>
-                                                    <TextBlock Margin="0 0 5 0" Text="{Binding Name, FallbackValue=Test}"/>
+                                                    <controls:EditableLabel Margin="0 0 5 0" Text="{Binding Name, FallbackValue=Test}" />
                                                 </ContentPresenter.Content>
                                             </ContentPresenter>
                                         </DockPanel>

@@ -84,6 +84,7 @@
     <Compile Include="Core\TypedRelayCommand.cs" />
     <Compile Include="Core\Win32.cs" />
     <Compile Include="Core\WpfTools.cs" />
+    <Compile Include="Presentation\Controls\EditableLabel.cs" />
     <Compile Include="Presentation\MainViewModel.cs" />
     <Compile Include="Presentation\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -138,5 +139,6 @@
   <ItemGroup>
     <Resource Include="Resources\drag.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

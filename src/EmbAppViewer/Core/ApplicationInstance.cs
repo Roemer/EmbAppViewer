@@ -70,7 +70,7 @@ namespace EmbAppViewer.Core
         }
 
         /// <summary>
-        /// The <see cref="ApplicationItem"/> on which this instance is based on.
+        /// The <see cref="Item"/> on which this instance is based on.
         /// </summary>
         public Item Item { get; }
 
@@ -102,7 +102,11 @@ namespace EmbAppViewer.Core
         /// <summary>
         /// The display name of the application.
         /// </summary>
-        public string Name => Item.Name;
+        public string Name
+        {
+            get => Item.Name;
+            set => Item.Name = value;
+        }
 
         public event Action<ApplicationInstance> Removed;
 
