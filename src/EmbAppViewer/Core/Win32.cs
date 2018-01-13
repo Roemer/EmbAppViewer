@@ -5,7 +5,23 @@ using System.Runtime.InteropServices;
 namespace EmbAppViewer.Core
 {
     /// <summary>
-    /// Various things from the Win32 API
+    /// Extension methods for Win32 structs.
+    /// </summary>
+    public static class Win32Extensions
+    {
+        public static int Width(this Win32.RECT rect)
+        {
+            return rect.Right - rect.Left;
+        }
+
+        public static int Height(this Win32.RECT rect)
+        {
+            return rect.Bottom - rect.Top;
+        }
+    }
+
+    /// <summary>
+    /// Various things from the Win32 API.
     /// </summary>
     public static class Win32
     {

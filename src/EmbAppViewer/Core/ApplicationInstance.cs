@@ -21,6 +21,10 @@ namespace EmbAppViewer.Core
         /// </summary>
         private IntPtr _windowHandle;
         /// <summary>
+        /// Variable containing the original window position and size before embedding.
+        /// </summary>
+        private Win32.RECT _originalWindowRect;
+        /// <summary>
         /// Variable containing the original window style to restore it on detach.
         /// </summary>
         private long _originalWindowStyle;
@@ -61,10 +65,12 @@ namespace EmbAppViewer.Core
 
             DetachCommand = new RelayCommand(o =>
             {
-                // Reset the style
-                Win32.SetWindowLongPtr(_windowHandle, Win32.GWL_STYLE, new IntPtr(_originalWindowStyle));
                 // Unset the parent
                 Win32.SetParent(_windowHandle, IntPtr.Zero);
+                // Reset the style
+                Win32.SetWindowLongPtr(_windowHandle, Win32.GWL_STYLE, new IntPtr(_originalWindowStyle));
+                // Reset the position
+                Win32.SetWindowPos(_windowHandle, IntPtr.Zero, _originalWindowRect.Left, _originalWindowRect.Top, _originalWindowRect.Width(), _originalWindowRect.Height(), Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
                 Dispose();
             });
         }
@@ -170,6 +176,9 @@ namespace EmbAppViewer.Core
 
         public void Embedd()
         {
+            // Get the original size of the window
+            Win32.GetWindowRect(_windowHandle, out _originalWindowRect);
+
             // Restyle the window (remove the control box)
             _originalWindowStyle = Win32.GetWindowLongPtr(_windowHandle, Win32.GWL_STYLE).ToInt64();
             var style = _originalWindowStyle & ~Win32.WS_CAPTION & ~Win32.WS_THICKFRAME & ~Win32.WS_POPUP & ~Win32.WS_SYSMENU & ~Win32.WS_DLGFRAME;
@@ -180,12 +189,10 @@ namespace EmbAppViewer.Core
 
             if (!Item.Resize)
             {
-                // Calculate the original size of the window
-                Win32.GetWindowRect(_windowHandle, out var rct);
                 // Move the original window into the panel
-                Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top, Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
+                Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, _originalWindowRect.Width(), _originalWindowRect.Height(), Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
                 // Resize the panel to match the original window size
-                Win32.SetWindowPos(ContainerPanel.Handle, IntPtr.Zero, 0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top, Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
+                Win32.SetWindowPos(ContainerPanel.Handle, IntPtr.Zero, 0, 0, _originalWindowRect.Width(), _originalWindowRect.Height(), Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE);
             }
             else
             {
