@@ -35,7 +35,7 @@
                     <ToolBarTray DockPanel.Dock="Top" IsLocked="True">
                         <ToolBar OverflowMode="Always">
                             <Image Source="/Resources/drag.png" ToolTip="Drag to select window to attach"
-                                MouseDown="DragImage_OnMouseDown" MouseUp="DragImage_OnMouseUp" MouseMove="DragImage_OnMouseMove"/>
+                                MouseDown="DragImage_OnMouseDown" MouseUp="DragImage_OnMouseUp" MouseMove="DragImage_OnMouseMove" />
                         </ToolBar>
                     </ToolBarTray>
                     <TreeView ItemsSource="{Binding Items}" MouseDoubleClick="Control_OnMouseDoubleClick">

@@ -174,11 +174,24 @@ namespace EmbAppViewer.Presentation
 
                 if (_lastWindowHandle != IntPtr.Zero)
                 {
+                    var embeddWindow = true;
+                    // Check for special windows to show a warning
+                    var desktopHwnd = Win32.GetDesktopWindow();
+                    var desktopProgramManagerHwnd = Win32.FindWindow("Progman", "Program Manager");
+                    if (_lastWindowHandle == desktopHwnd || _lastWindowHandle == desktopProgramManagerHwnd)
+                    {
+                        if (MessageBox.Show("Are you sure you want to embedd the desktop?", "Embedding Desktop", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                        {
+                            embeddWindow = false;
+                        }
+                    }
+                    if (embeddWindow)
+                    {
                     var item = new Item();
-                    item.Name = "Test";
                     var appInstance = new ApplicationInstance(item);
                     appInstance.InitFromHwnd(_lastWindowHandle);
                     EmbeddAppInTab(appInstance);
+                    }
                     // Cleanup
                     _lastWindowHandle = IntPtr.Zero;
                 }
