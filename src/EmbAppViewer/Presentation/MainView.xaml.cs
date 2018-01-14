@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
+using System.Windows.Interop;
 using EmbAppViewer.Core;
 using EmbAppViewer.Core.Overlay;
 using Image = System.Windows.Controls.Image;
@@ -178,7 +179,7 @@ namespace EmbAppViewer.Presentation
                     var appInstance = new ApplicationInstance(item);
                     appInstance.InitFromHwnd(_lastWindowHandle);
                     EmbeddAppInTab(appInstance);
-
+                    // Cleanup
                     _lastWindowHandle = IntPtr.Zero;
                 }
 
@@ -204,6 +205,14 @@ namespace EmbAppViewer.Presentation
                     window = parent;
                 }
 
+                // Check for itself
+                var selfHandle = new WindowInteropHelper(GetWindow(this)).Handle;
+                if (selfHandle == window)
+                {
+                    // Don't use itself
+                    window = IntPtr.Zero;
+                }
+
                 Win32.GetWindowRect(window, out var rect);
                 var rectangle = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
 
@@ -214,7 +223,10 @@ namespace EmbAppViewer.Presentation
                 else if (window != _lastWindowHandle)
                 {
                     _lastOverlay.Dispose();
+                    if (window != IntPtr.Zero)
+                    {
                     _lastOverlay = new OverlayRectangle(rectangle);
+                }
                 }
 
                 _lastWindowHandle = window;
