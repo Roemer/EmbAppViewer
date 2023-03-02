@@ -1,25 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbAppViewer", "EmbAppViewer\EmbAppViewer.csproj", "{ECD2AFC8-2B53-49BF-9C37-CAEC5D984E79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmbAppViewer", "EmbAppViewer\EmbAppViewer.csproj", "{5B434188-D0DE-4C40-B7D7-655EC225AFD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ECD2AFC8-2B53-49BF-9C37-CAEC5D984E79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ECD2AFC8-2B53-49BF-9C37-CAEC5D984E79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ECD2AFC8-2B53-49BF-9C37-CAEC5D984E79}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ECD2AFC8-2B53-49BF-9C37-CAEC5D984E79}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EB378EE6-DA53-4FB8-9563-FC5550D3B952}
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B434188-D0DE-4C40-B7D7-655EC225AFD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B434188-D0DE-4C40-B7D7-655EC225AFD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B434188-D0DE-4C40-B7D7-655EC225AFD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B434188-D0DE-4C40-B7D7-655EC225AFD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

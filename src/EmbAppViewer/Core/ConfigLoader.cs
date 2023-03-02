@@ -6,7 +6,7 @@ namespace EmbAppViewer.Core
 {
     public static class ConfigLoader
     {
-        private static readonly Deserializer Deserializer;
+        private static readonly IDeserializer Deserializer;
 
         static ConfigLoader()
         {
@@ -18,11 +18,16 @@ namespace EmbAppViewer.Core
 
         public static Config LoadConfig()
         {
-            using (var reader = new StreamReader("config.yaml"))
+            var configFile = "config.yaml";
+            if (File.Exists(configFile))
             {
-                var config = Deserializer.Deserialize<Config>(reader);
-                return config;
+                using (var reader = new StreamReader(configFile))
+                {
+                    var config = Deserializer.Deserialize<Config>(reader);
+                    return config;
+                }
             }
+            return new Config();
         }
     }
 }

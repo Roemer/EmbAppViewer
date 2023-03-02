@@ -28,23 +28,18 @@ Task("Restore-NuGet-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    NuGetRestore(slnPath);
+    DotNetRestore(slnPath);
 });
 
 Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
-    MSBuild(slnPath, new MSBuildSettings {
-        Verbosity = Verbosity.Minimal,
-        ToolVersion = MSBuildToolVersion.VS2017,
-        Configuration = configuration
-    }.AddFileLogger(new MSBuildFileLogger {
-        LogFile = artifactsDir.CombineWithFilePath("BuildLog.txt"),
-        Verbosity = Verbosity.Normal,
-        MSBuildFileLoggerOutput = MSBuildFileLoggerOutput.All,
-        ShowTimestamp = true
-    }));
+    DotNetBuild(slnPath, new DotNetBuildSettings
+    {
+        Configuration = configuration,
+        Verbosity = DotNetVerbosity.Minimal,
+    });
 });
 
 Task("Package")

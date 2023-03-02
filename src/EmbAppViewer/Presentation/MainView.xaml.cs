@@ -20,11 +20,11 @@ namespace EmbAppViewer.Presentation
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainView : Window
     {
         private MainViewModel _mainViewModel;
 
-        public MainWindow()
+        public MainView()
         {
             InitializeComponent();
 

@@ -30,9 +30,5 @@ _ReSharper*/
 # NuGet
 **/packages/*
 
-# Build tools / dependencies
-tools/*
-!tools/packages.config
-
 # Build artifacts
 /artifacts
