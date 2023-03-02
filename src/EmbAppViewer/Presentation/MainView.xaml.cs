@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -201,7 +199,7 @@ namespace EmbAppViewer.Presentation
         }
 
         private IntPtr _lastWindowHandle = IntPtr.Zero;
-        private OverlayRectangle _lastOverlay = null;
+        private OverlayRectangle? _lastOverlay = null;
 
         private void DragImage_OnMouseMove(object sender, MouseEventArgs e)
         {
@@ -235,7 +233,7 @@ namespace EmbAppViewer.Presentation
                 }
                 else if (window != _lastWindowHandle)
                 {
-                    _lastOverlay.Dispose();
+                    _lastOverlay?.Dispose();
                     if (window != IntPtr.Zero)
                     {
                     _lastOverlay = new OverlayRectangle(rectangle);

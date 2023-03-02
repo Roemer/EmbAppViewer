@@ -7,7 +7,7 @@ namespace EmbAppViewer.Presentation.Controls
 {
     public class EditableLabel : TextBox
     {
-        private string _previousValue;
+        private string _previousValue = string.Empty;
 
         public EditableLabel()
         {

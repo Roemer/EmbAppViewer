@@ -8,17 +8,17 @@ namespace EmbAppViewer.Core
 {
     public abstract class ObservableObject : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        private readonly Dictionary<string, object> _backingFieldValues = new Dictionary<string, object>();
+        private readonly Dictionary<string, object?> _backingFieldValues = new Dictionary<string, object?>();
 
         /// <summary>
         /// Gets a property value from the internal backing field
         /// </summary>
-        protected T GetValue<T>([CallerMemberName] string propertyName = "")
+        protected T? GetValue<T>([CallerMemberName] string propertyName = "")
         {
             if (_backingFieldValues.TryGetValue(propertyName, out var value))
-                return (T) value;
+                return (T?) value;
             return default(T);
         }
 
@@ -50,7 +50,7 @@ namespace EmbAppViewer.Core
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(GetNameFromExpression(selectorExpression)));
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

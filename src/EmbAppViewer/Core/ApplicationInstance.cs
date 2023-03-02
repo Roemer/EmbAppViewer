@@ -58,8 +58,8 @@ namespace EmbAppViewer.Core
 
             CloseCommand = new RelayCommand(o =>
             {
-                AppProcess.CloseMainWindow();
-                AppProcess.Close();
+                AppProcess?.CloseMainWindow();
+                AppProcess?.Close();
                 Dispose();
             });
 
@@ -110,7 +110,7 @@ namespace EmbAppViewer.Core
         /// </summary>
         public string Name
         {
-            get => Item.Name;
+            get => Item.Name!;
             set => Item.Name = value;
         }
 
@@ -118,7 +118,7 @@ namespace EmbAppViewer.Core
 
         public bool Start()
         {
-            var psi = new ProcessStartInfo(Item.Path, Item.Arguments);
+            var psi = new ProcessStartInfo(Item.Path!, Item.Arguments!);
             if (String.IsNullOrWhiteSpace(Item.WorkDirectory))
             {
                 psi.WorkingDirectory = Path.GetDirectoryName(Item.Path);
@@ -129,7 +129,12 @@ namespace EmbAppViewer.Core
             }
             try
             {
-                AppProcess = Process.Start(psi);
+                var process = Process.Start(psi);
+                if (process == null)
+                {
+                    throw new Exception("Application process is null");
+                }
+                AppProcess = process;
             }
             catch (Exception ex)
             {
@@ -215,7 +220,7 @@ namespace EmbAppViewer.Core
             }
         }
 
-        private void ResizeTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void ResizeTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             ResizeEmbeddedApp();
         }

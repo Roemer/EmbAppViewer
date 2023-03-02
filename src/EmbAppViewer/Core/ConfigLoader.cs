@@ -11,7 +11,7 @@ namespace EmbAppViewer.Core
         static ConfigLoader()
         {
             Deserializer = new DeserializerBuilder()
-                .WithNamingConvention(new CamelCaseNamingConvention())
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .IgnoreUnmatchedProperties()
                 .Build();
         }

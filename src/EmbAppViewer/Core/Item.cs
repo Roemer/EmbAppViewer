@@ -11,22 +11,22 @@ namespace EmbAppViewer.Core
         /// <summary>
         /// The display name of the application.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// The path of the executable of the application.
         /// </summary>
-        public string Path { get; set; }
+        public string? Path { get; set; }
 
         /// <summary>
         /// The command line arguments used when starting the application.
         /// </summary>
-        public string Arguments { get; set; }
+        public string? Arguments { get; set; }
 
         /// <summary>
         /// The work directory for the application.
         /// </summary>
-        public string WorkDirectory { get; set; }
+        public string? WorkDirectory { get; set; }
 
         /// <summary>
         /// Flag to indicate if the embedded application should resize to the containers size or just keep its original size.
