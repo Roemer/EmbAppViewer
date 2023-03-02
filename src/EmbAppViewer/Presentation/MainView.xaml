@@ -72,7 +72,7 @@
                     <TabControl.Resources>
                         <Style TargetType="{x:Type TabItem}">
                             <!-- Template for the header -->
-                            <Setter Property="Padding" Value="5 0 0 0" />
+                            <Setter Property="Padding" Value="10 5 10 5" />
                             <Setter Property="HeaderTemplate">
                                 <Setter.Value>
                                     <DataTemplate DataType="core:ApplicationInstance">
